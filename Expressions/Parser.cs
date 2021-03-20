@@ -46,6 +46,7 @@ namespace Expressions
         {
             public readonly IOperator Operator;
             public readonly ParenToken Paren;
+
             public OperatorOrParen(IOperator op)
             {
                 Operator = op;
@@ -72,13 +73,14 @@ namespace Expressions
             opStack.Push(new OperatorOrParen(openingParenToken));
 
             Token prevToken = openingParenToken;
+            var numberOfUnmatchedParen = 1;
             foreach (var token in new LexedString(text))
             {
                 if (!prevToken.CanBeFollowedBy(token))
                 {
                     throw new Exception("Unexpected token: " + token.Value);
                 }
-                
+
                 switch (token)
                 {
                     case LiteralToken lit:
@@ -88,12 +90,19 @@ namespace Expressions
                         exprStack.Push(new Variable(var.Value));
                         break;
                     case OperatorToken op:
-                        opStack.Push(new OperatorOrParen(op.AsOperator()));
+                        ProcessOperator(exprStack, opStack, op.AsOperator());
                         break;
                     case OpeningParenToken p:
+                        numberOfUnmatchedParen++;
                         opStack.Push(new OperatorOrParen(p));
                         break;
                     case ClosingParenToken:
+                        numberOfUnmatchedParen--;
+                        if (numberOfUnmatchedParen < 0)
+                        {
+                            throw new Exception("Incorrect bracket sequence");
+                        }
+
                         CloseParen(exprStack, opStack);
                         break;
                     default: throw new Exception("Unknown token type: ");
@@ -102,14 +111,45 @@ namespace Expressions
                 prevToken = token;
             }
 
+            ValidateEndOfParsing(prevToken, --numberOfUnmatchedParen);
             CloseParen(exprStack, opStack);
 
-            if (exprStack.Count > 1 || opStack.Count != 0)
-            {
-                throw new Exception();
-            }
-            
             return exprStack.Peek();
+        }
+
+        private static void ProcessOperator(Stack<IExpression> exprStack, Stack<OperatorOrParen> opStack, 
+            IOperator newOperator)
+        {
+            var top = opStack.Peek();
+            switch (top.Paren)
+            {
+                case null: break;
+                case OpeningParenToken:
+                    opStack.Push(new OperatorOrParen(newOperator));
+                    return;
+                case ClosingParenToken: throw new Exception("Illegal state");
+            }
+
+            switch (top.Operator)
+            {
+                case null: break;
+                default:
+                    if (top.Operator.Priority >= newOperator.Priority)
+                    {
+                        opStack.Pop();
+                        ReduceTopExpressions(exprStack, top.Operator);
+                    }
+                    opStack.Push(new OperatorOrParen(newOperator));
+                    break;
+            }
+        }
+
+        private static void ReduceTopExpressions(Stack<IExpression> exprStack, IOperator @operator)
+        {
+            var right = exprStack.Pop();
+            var left = exprStack.Pop();
+
+            exprStack.Push(new BinaryExpression(left, @operator, right));
         }
 
         private static void CloseParen(Stack<IExpression> exprStack, Stack<OperatorOrParen> opStack)
@@ -117,22 +157,37 @@ namespace Expressions
             do
             {
                 var current = opStack.Pop();
-                
+
                 if (current.IsOperator())
                 {
                     var right = exprStack.Pop();
                     var left = exprStack.Pop();
-                    
+
                     exprStack.Push(new BinaryExpression(left, current.Operator, right));
                     continue;
                 }
 
                 switch (current.Paren)
                 {
-                    case ClosingParenToken: throw new Exception("Incorrect bracket sequence");
-                    case OpeningParenToken: return;
+                    case ClosingParenToken: throw new Exception("Illegal state");
+                    case OpeningParenToken:
+                        exprStack.Push(new ParenExpression(exprStack.Pop()));
+                        return;
                 }
             } while (opStack.Count > 0);
+        }
+
+        private static void ValidateEndOfParsing(Token lastToken, int numberOfUnmatchedParen)
+        {
+            if (lastToken is OperatorToken)
+            {
+                throw new Exception("Unexpected EOF");
+            }
+
+            if (numberOfUnmatchedParen != 0)
+            {
+                throw new Exception("Incorrect bracket sequence");
+            }
         }
     }
 }
