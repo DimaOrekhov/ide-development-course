@@ -37,15 +37,15 @@ namespace Expressions
     
     public class BinaryExpression : IExpression
     {
-        public readonly IExpression FirstOperand;
-        public readonly IExpression SecondOperand;
-        public readonly string Operator;
+        public readonly IExpression Left;
+        public readonly IExpression Right;
+        public readonly IOperator Operator;
 
-        public BinaryExpression(IExpression firstOperand, IExpression secondOperand, string @operator)
+        public BinaryExpression(IExpression left, IOperator op, IExpression right)
         {
-            FirstOperand = firstOperand;
-            SecondOperand = secondOperand;
-            Operator = @operator;
+            Left = left;
+            Operator = op;
+            Right = right;
         }
 
         public void Accept(IExpressionVisitor visitor)

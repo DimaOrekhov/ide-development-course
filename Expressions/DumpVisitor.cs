@@ -24,9 +24,9 @@ namespace Expressions
         public void Visit(BinaryExpression expression)
         {
             _builder.Append("Binary(");
-            expression.FirstOperand.Accept(this);
+            expression.Left.Accept(this);
             _builder.Append(expression.Operator);
-            expression.SecondOperand.Accept(this);
+            expression.Right.Accept(this);
             _builder.Append(')');
         }
 
