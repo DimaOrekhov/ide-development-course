@@ -11,7 +11,7 @@ namespace Expressions
             VariableToken var => var.CanBeFollowedBy(next),
             LiteralToken lit => lit.CanBeFollowedBy(next),
             ParenToken p => p.CanBeFollowedBy(next),
-            _ => throw new Exception("Unknown token type")
+            _ => throw ParsingException.UnknownTokenType(previous)
         };
 
         private static bool CanBeFollowedBy(this OperatorToken previous, Token next) =>
@@ -27,7 +27,7 @@ namespace Expressions
         {
             OpeningParenToken => next is not OperatorToken,
             ClosingParenToken => next is OperatorToken || next is ClosingParenToken,
-            _ => throw new Exception("Unknown token type")
+            _ => throw ParsingException.UnknownTokenType(previous)
         };
 
         public static IOperator AsOperator(this OperatorToken token) => token.Value switch
@@ -36,7 +36,7 @@ namespace Expressions
             "-" => new Minus(),
             "*" => new Mult(),
             "/" => new Div(),
-            _ => throw new Exception("Unknown operator token")
+            _ => throw ParsingException.UnknownOperatorToken(token)
         };
     }
 
@@ -78,7 +78,7 @@ namespace Expressions
             {
                 if (!prevToken.CanBeFollowedBy(token))
                 {
-                    throw new Exception("Unexpected token: " + token.Value);
+                    throw ParsingException.UnexpectedToken(token);
                 }
 
                 switch (token)
@@ -105,7 +105,7 @@ namespace Expressions
 
                         CloseParen(exprStack, opStack);
                         break;
-                    default: throw new Exception("Unknown token type: ");
+                    default: throw ParsingException.UnknownTokenType(token);
                 }
 
                 prevToken = token;
@@ -169,10 +169,10 @@ namespace Expressions
 
                 switch (current.Paren)
                 {
-                    case ClosingParenToken: throw new Exception("Illegal state");
                     case OpeningParenToken:
                         exprStack.Push(new ParenExpression(exprStack.Pop()));
                         return;
+                    case ClosingParenToken: throw new Exception("Illegal state");
                 }
             } while (opStack.Count > 0);
         }
@@ -181,7 +181,7 @@ namespace Expressions
         {
             if (lastToken is OperatorToken)
             {
-                throw new Exception("Unexpected EOF");
+                throw ParsingException.UnexpectedEof();
             }
 
             if (numberOfUnmatchedParen != 0)
