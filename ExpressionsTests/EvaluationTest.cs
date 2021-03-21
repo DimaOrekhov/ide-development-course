@@ -1,16 +1,13 @@
-using System;
 using System.Collections.Generic;
 using Expressions;
 using NUnit.Framework;
 
 namespace ExpressionsTests
 {
-    public class EvaluationTests
+    public abstract class AbstractEvaluationTest
     {
-        private static int Evaluate(string text, Dictionary<string, int> environment = null) =>
-            Parser.Parse(text).Evaluate(environment);
+        protected abstract int Evaluate(string text, Dictionary<string, int> environment = null);
         
-        [Test]
         public void TestTwoOperands()
         {
             Assert.AreEqual(3, Evaluate("1 + 2"));
@@ -54,5 +51,17 @@ namespace ExpressionsTests
             Assert.AreEqual(1 + (3) * 4 / ( 3 -  1 - 1), 
                 Evaluate("  1 + (3) * 4 / ( 3 -  1 - 1)  "));
         }
+    }
+    
+    public class InterpretationTests : AbstractEvaluationTest
+    {
+        protected override int Evaluate(string text, Dictionary<string, int> environment = null) =>
+            Parser.Parse(text).Evaluate(environment);
+    }
+
+    public class CompilationTests : AbstractEvaluationTest
+    {
+        protected override int Evaluate(string text, Dictionary<string, int> environment = null) =>
+            (int) Compiler.ParseAndCompileExpression(text).Evaluate();
     }
 }
