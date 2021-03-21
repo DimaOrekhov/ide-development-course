@@ -35,8 +35,24 @@ namespace ExpressionsTests
         [Test]
         public void TestLeftAssociativity()
         {
-            Assert.AreEqual(4,Evaluate("9 - 2 - 3"));
-            Assert.AreEqual(2, Evaluate("8 / 2 / 2"));
+            Assert.AreEqual(9 - 2 - 3,Evaluate("9 - 2 - 3"));
+            Assert.AreEqual(8 / 2 / 2, Evaluate("8 / 2 / 2"));
+        }
+
+        [Test]
+        public void TestParenPriority()
+        {
+            Assert.AreEqual((3 + 4) * 2, 
+                Evaluate("(3 + 4) * 2"));
+            Assert.AreEqual(3 + 4 * 2, 
+                Evaluate("3 + 4 * 2"));
+        }
+
+        [Test]
+        public void TestComplicatedExpression()
+        {
+            Assert.AreEqual(1 + (3) * 4 / ( 3 -  1 - 1), 
+                Evaluate("  1 + (3) * 4 / ( 3 -  1 - 1)  "));
         }
     }
 }
