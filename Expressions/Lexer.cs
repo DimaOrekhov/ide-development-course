@@ -8,18 +8,20 @@ namespace Expressions
 {
     public class LexedString : IEnumerable<Token>
     {
-        public LexedString(string text)
-        {
-            _text = text;
-            _currentPosition = 0;
-            _parsers = new List<Func<Token>> {ParseOperator, ParseVariable, ParseLiteral, ParseParen};
-            SkipWhiteSpace();
-        }
+        private delegate Token ElementaryParser();
 
         private static readonly List<string> KnownOperators = new(){"+", "-", "*", "/"};
         private readonly string _text;
         private int _currentPosition;
-        private readonly List<Func<Token>> _parsers;
+        private readonly List<ElementaryParser> _parsers;
+        
+        public LexedString(string text)
+        {
+            _text = text;
+            _currentPosition = 0;
+            _parsers = new List<ElementaryParser> {ParseOperator, ParseVariable, ParseLiteral, ParseParen};
+            SkipWhiteSpace();
+        }
 
         private void SkipWhiteSpace()
         {
