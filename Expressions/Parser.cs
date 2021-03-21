@@ -69,11 +69,8 @@ namespace Expressions
             var exprStack = new Stack<IExpression>();
             var opStack = new Stack<OperatorOrParen>();
 
-            var openingParenToken = new OpeningParenToken(-1);
-            opStack.Push(new OperatorOrParen(openingParenToken));
-
-            Token prevToken = openingParenToken;
-            var numberOfUnmatchedParen = 1;
+            Token prevToken = new OpeningParenToken(-1); // Create only for CanBeFollowed call on first iteration
+            var numberOfUnmatchedParen = 0;
             foreach (var token in new LexedString(text))
             {
                 if (!prevToken.CanBeFollowedBy(token))
@@ -111,8 +108,11 @@ namespace Expressions
                 prevToken = token;
             }
 
-            ValidateEndOfParsing(prevToken, --numberOfUnmatchedParen);
-            CloseParen(exprStack, opStack);
+            ValidateEndOfParsing(prevToken, numberOfUnmatchedParen);
+            if (opStack.Count > 0)
+            {
+                CloseParen(exprStack, opStack);
+            }
 
             return exprStack.Peek();
         }
@@ -120,6 +120,12 @@ namespace Expressions
         private static void ProcessOperator(Stack<IExpression> exprStack, Stack<OperatorOrParen> opStack, 
             IOperator newOperator)
         {
+            if (opStack.Count == 0)
+            {
+                opStack.Push(new OperatorOrParen(newOperator));
+                return;
+            }
+
             var top = opStack.Peek();
             switch (top.Paren)
             {
