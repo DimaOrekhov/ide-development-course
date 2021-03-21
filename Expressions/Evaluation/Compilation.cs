@@ -37,7 +37,7 @@ namespace Expressions.Evaluation
 
         public ExpressionCompilerVisitor(ISet<string> variables)
         {
-            if (variables.Count > 255)
+            if (variables.Count > 254)
             {
                 throw new ArgumentException("Expression contains too many variables");
             }
