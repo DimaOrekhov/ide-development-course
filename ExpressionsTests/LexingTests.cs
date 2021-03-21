@@ -39,6 +39,13 @@ namespace ExpressionsTests
         }
 
         [Test]
+        public void TestEmptyString()
+        {
+            Assert.AreEqual(new List<string>(), AsTokenStrings(""));
+            Assert.AreEqual(new List<string>(), AsTokenStrings("   "));
+        }
+
+        [Test]
         public void TestComplicatedExpression()
         {
             Assert.AreEqual(new List<string>
