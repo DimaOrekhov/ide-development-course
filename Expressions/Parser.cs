@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Expressions
 {
@@ -49,19 +50,17 @@ namespace Expressions
 
             public OperatorOrParen(IOperator op)
             {
+                Utils.RequireNotNull(op, "op");
                 Operator = op;
                 Paren = null;
             }
 
             public OperatorOrParen(ParenToken paren)
             {
+                Utils.RequireNotNull(paren, "paren");
                 Operator = null;
                 Paren = paren;
             }
-
-            public bool IsOperator() => Operator != null;
-
-            public bool IsParen() => Paren != null;
         }
 
         public static IExpression Parse(string text)
@@ -164,13 +163,15 @@ namespace Expressions
             {
                 var current = opStack.Pop();
 
-                if (current.IsOperator())
+                switch (current.Operator)
                 {
-                    var right = exprStack.Pop();
-                    var left = exprStack.Pop();
+                    case null: break;
+                    default:
+                        var right = exprStack.Pop();
+                        var left = exprStack.Pop();
 
-                    exprStack.Push(new BinaryExpression(left, current.Operator, right));
-                    continue;
+                        exprStack.Push(new BinaryExpression(left, current.Operator, right));
+                        continue;
                 }
 
                 switch (current.Paren)
