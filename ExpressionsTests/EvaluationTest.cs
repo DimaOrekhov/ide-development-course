@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Expressions;
 using Expressions.Evaluation;
@@ -10,6 +11,14 @@ namespace ExpressionsTests
     {
         protected abstract int Evaluate(string text, Dictionary<string, int> environment = null);
 
+        [Test]
+        public void TestSingleNodeEvaluation()
+        {
+            Assert.AreEqual(3, Evaluate("3"));
+            Assert.AreEqual(10, Evaluate("x", new Dictionary<string, int>{{ "x", 10 }}));
+
+        }
+        
         [Test]
         public void TestTwoOperands()
         {
