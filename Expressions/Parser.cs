@@ -96,7 +96,7 @@ namespace Expressions
                         numberOfUnmatchedParen--;
                         if (numberOfUnmatchedParen < 0)
                         {
-                            throw new Exception("Incorrect bracket sequence");
+                            throw ParsingException.UnexpectedToken(token);
                         }
 
                         CloseParen(exprStack, opStack);
@@ -193,7 +193,7 @@ namespace Expressions
 
             if (numberOfUnmatchedParen != 0)
             {
-                throw new Exception("Incorrect bracket sequence");
+                throw ParsingException.ClosingBracketExpected();
             }
         }
     }
