@@ -1,4 +1,4 @@
-namespace Expressions
+namespace Expressions.Lexing
 {
     public abstract record Token
     {
