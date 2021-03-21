@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Expressions;
 
-namespace Expressions
+namespace Expressions.Lexing
 {
     public class LexedString : IEnumerable<Token>
     {

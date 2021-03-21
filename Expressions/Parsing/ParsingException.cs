@@ -1,6 +1,7 @@
 using System;
+using Expressions.Lexing;
 
-namespace Expressions
+namespace Expressions.Parsing
 {
     public class ParsingException : Exception
     {

@@ -1,4 +1,5 @@
 using Expressions;
+using Expressions.Parsing;
 using NUnit.Framework;
 
 namespace ExpressionsTests

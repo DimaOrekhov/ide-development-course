@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-namespace Expressions
+namespace Expressions.Evaluation
 {
-    public static class ExpressionEvaluation
+    public static class Interpreter
     {
         public static int Evaluate(this IExpression expression, Dictionary<string, int> environment) => expression switch
         {

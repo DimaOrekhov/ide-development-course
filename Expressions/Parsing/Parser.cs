@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using Expressions.Lexing;
 
-namespace Expressions
+namespace Expressions.Parsing
 {
     public static class TokenExtensions
     {
