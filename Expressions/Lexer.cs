@@ -33,27 +33,36 @@ namespace Expressions
 
         private Token ParseNextToken() => _parsers.Select(parser => parser()).FirstOrDefault(token => token != null);
 
-        private OperatorToken ParseOperator() =>
-            KnownOperators.Contains(_text[_currentPosition].ToString()) 
-                ? new OperatorToken(_text[_currentPosition++].ToString()) 
+        private OperatorToken ParseOperator()
+        {
+            var initialPosition = _currentPosition;
+            return KnownOperators.Contains(_text[_currentPosition].ToString()) 
+                ? new OperatorToken(_text[_currentPosition++].ToString(), initialPosition) 
                 : null;
+        }
 
-        private VariableToken ParseVariable() =>
-            char.IsLetter(_text[_currentPosition]) 
-                ? new VariableToken(_text[_currentPosition++].ToString()) 
+        private VariableToken ParseVariable()
+        {
+            var initialPosition = _currentPosition;
+            return char.IsLetter(_text[_currentPosition]) 
+                ? new VariableToken(_text[_currentPosition++].ToString(), initialPosition) 
                 : null;
+        }
 
-        private LiteralToken ParseLiteral() =>
-            char.IsDigit(_text[_currentPosition])
-                ? new LiteralToken(_text[_currentPosition++].ToString())
+        private LiteralToken ParseLiteral()
+        {
+            var initialPosition = _currentPosition;
+            return char.IsDigit(_text[_currentPosition])
+                ? new LiteralToken(_text[_currentPosition++].ToString(), initialPosition)
                 : null;
-
+        }
+        
         private ParenToken ParseParen()
         {
             ParenToken result = _text[_currentPosition] switch
             {
-                '(' => new OpeningParenToken(),
-                ')' => new ClosingParenToken(),
+                '(' => new OpeningParenToken(_currentPosition),
+                ')' => new ClosingParenToken(_currentPosition),
                 _ => null
             };
 
