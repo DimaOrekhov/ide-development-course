@@ -8,6 +8,7 @@ namespace ExpressionsTests
     {
         protected abstract int Evaluate(string text, Dictionary<string, int> environment = null);
         
+        [Test]
         public void TestTwoOperands()
         {
             Assert.AreEqual(3, Evaluate("1 + 2"));
