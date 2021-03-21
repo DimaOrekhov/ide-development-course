@@ -26,23 +26,9 @@ namespace ExpressionsTests
     
     public class LexingTests
     {
-        private static List<Token> AsTokenList(string text) => new LexedString(text).ToList();
-
         private static List<string> AsTokenStrings(string text) => 
             new LexedString(text).Select(token => token.Dump()).ToList();
 
-        private static void TwoLiteralsSimpleTest(string left, string op, string right)
-        {
-            var tokenList = AsTokenList(left + op + right);
-            var expected = new List<Token>()
-            {
-                new LiteralToken(left),
-                new OperatorToken(op),
-                new LiteralToken(right)
-            };
-            Assert.AreEqual(expected, tokenList);
-        }
-        
         [Test]
         public void TestTwoLiteralOp()
         {

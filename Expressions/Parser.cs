@@ -69,7 +69,7 @@ namespace Expressions
             var exprStack = new Stack<IExpression>();
             var opStack = new Stack<OperatorOrParen>();
 
-            var openingParenToken = new OpeningParenToken();
+            var openingParenToken = new OpeningParenToken(-1);
             opStack.Push(new OperatorOrParen(openingParenToken));
 
             Token prevToken = openingParenToken;

@@ -2,41 +2,43 @@ namespace Expressions
 {
     public abstract record Token
     {
-        protected Token(string value)
+        protected Token(string value, int position)
         {
             Value = value;
+            Position = position;
         }
         
         public readonly string Value;
+        public readonly int Position;
     }
     
     public record OperatorToken : Token
     {
-        public OperatorToken(string value) : base(value) {}
+        public OperatorToken(string value, int position) : base(value, position) {}
     }
 
     public record VariableToken : Token
     {
-        public VariableToken(string value) : base(value) {}
+        public VariableToken(string value, int position) : base(value, position) {}
     }
 
     public record LiteralToken : Token
     {
-        public LiteralToken(string value) : base(value) {}
+        public LiteralToken(string value, int position) : base(value, position) {}
     }
 
     public abstract record ParenToken : Token
     {
-        protected ParenToken(string value) : base(value) {}
+        protected ParenToken(string value, int position) : base(value, position) {}
     }
 
     public record OpeningParenToken : ParenToken
     {
-        public OpeningParenToken() : base("(") {}
+        public OpeningParenToken(int position) : base("(", position) {}
     }
 
     public record ClosingParenToken : ParenToken
     {
-        public ClosingParenToken() : base(")") {}
+        public ClosingParenToken(int position) : base(")", position) {}
     }
 }
