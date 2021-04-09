@@ -17,7 +17,7 @@ namespace Expressions.Lexing
         {
             _text = text;
             _currentPosition = 0;
-            _parsers = new List<ElementaryParser> {ParseOperator, ParseVariable, ParseLiteral, ParseParen};
+            _parsers = new List<ElementaryParser> {ParseOperator, ParseIdentifier, ParseLiteral, ParseParen};
             SkipWhiteSpace();
         }
 
@@ -41,12 +41,28 @@ namespace Expressions.Lexing
                 : null;
         }
 
-        private VariableToken ParseVariable()
+        private IdentifierToken ParseIdentifier()
         {
             var initialPosition = _currentPosition;
-            return char.IsLetter(_text[_currentPosition]) 
-                ? new VariableToken(_text[_currentPosition++].ToString(), initialPosition) 
-                : null;
+            
+            if (char.IsLetter(_text[_currentPosition]) || _text[_currentPosition] == '_')
+            {
+                _currentPosition++;
+            }
+            else
+            {
+                return null;
+            }
+
+            while (HasTextLeft() && 
+                   (char.IsLetterOrDigit(_text[_currentPosition]) 
+                    || _text[_currentPosition] == '_'))
+            {
+                _currentPosition++;
+            }
+
+            var value = _text.Substring(initialPosition, _currentPosition - initialPosition);
+            return new IdentifierToken(value, initialPosition);
         }
 
         private LiteralToken ParseLiteral()

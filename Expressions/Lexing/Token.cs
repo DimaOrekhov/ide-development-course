@@ -17,9 +17,9 @@ namespace Expressions.Lexing
         public OperatorToken(string value, int position) : base(value, position) {}
     }
 
-    public record VariableToken : Token
+    public record IdentifierToken : Token
     {
-        public VariableToken(string value, int position) : base(value, position) {}
+        public IdentifierToken(string value, int position) : base(value, position) {}
     }
 
     public record LiteralToken : Token
