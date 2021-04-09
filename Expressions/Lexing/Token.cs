@@ -2,14 +2,16 @@ namespace Expressions.Lexing
 {
     public abstract record Token
     {
-        protected Token(string value, int position)
+        protected Token(string value, Position start, Position end)
         {
             Value = value;
-            Position = position;
+            Start = start;
+            End = end;
         }
         
         public readonly string Value;
-        public readonly int Position;
+        public readonly Position Start;
+        public readonly Position End;
     }
 
     public record Position
@@ -28,31 +30,31 @@ namespace Expressions.Lexing
     
     public record OperatorToken : Token
     {
-        public OperatorToken(string value, int position) : base(value, position) {}
+        public OperatorToken(string value, Position start, Position end) : base(value, start, end) {}
     }
 
     public record IdentifierToken : Token
     {
-        public IdentifierToken(string value, int position) : base(value, position) {}
+        public IdentifierToken(string value, Position start, Position end) : base(value, start, end) {}
     }
 
     public record LiteralToken : Token
     {
-        public LiteralToken(string value, int position) : base(value, position) {}
+        public LiteralToken(string value, Position start, Position end) : base(value, start, end) {}
     }
 
     public abstract record ParenToken : Token
     {
-        protected ParenToken(string value, int position) : base(value, position) {}
+        protected ParenToken(string value, Position start, Position end) : base(value, start, end) {}
     }
 
     public record OpeningParenToken : ParenToken
     {
-        public OpeningParenToken(int position) : base("(", position) {}
+        public OpeningParenToken(Position start, Position end) : base("(", start, end) {}
     }
 
     public record ClosingParenToken : ParenToken
     {
-        public ClosingParenToken(int position) : base(")", position) {}
+        public ClosingParenToken(Position start, Position end) : base(")", start, end) {}
     }
 }

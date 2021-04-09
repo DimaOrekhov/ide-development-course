@@ -13,10 +13,10 @@ namespace Expressions.Parsing
             new ($"Unknown token type: {token.GetType().Name}");
 
         public static ParsingException UnknownOperatorToken(Token token) =>
-            new($"Unknown operator token {token.Value} at position {token.Position}");
+            new($"Unknown operator token {token.Value} at position {token.Start}");
 
         public static ParsingException UnexpectedToken(Token token) =>
-            new($"Unexpected token: {token.Value} at position {token.Position}");
+            new($"Unexpected token: {token.Value} at position {token.Start}");
 
         public static ParsingException UnexpectedEof() => new ("Unexpected EOF");
 

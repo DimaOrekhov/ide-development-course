@@ -14,6 +14,9 @@ namespace Expressions.Lexing.TokenParsers
 
         private static readonly TerminalState Terminal = new();
 
+        // TODO:
+        // Maybe some symbols should be excluded since they are part of other tokens:
+        // e.g. ' for char string, # for CR
         private static readonly List<char> SingleSymbolSpecials = new()
         {
             '\'', '+', '-', '*', '/', '=', '<', '>',
@@ -55,6 +58,7 @@ namespace Expressions.Lexing.TokenParsers
 
         protected override ParsingResult GetCurrentResult(string text, Position start, Position end)
         {
+            var value = text.Substring(start.AbsoluteOffset, end.AbsoluteOffset - start.AbsoluteOffset);
             throw new System.NotImplementedException();
         }
     }

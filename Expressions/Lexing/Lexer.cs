@@ -33,11 +33,14 @@ namespace Expressions.Lexing
 
         private Token ParseNextToken() => _parsers.Select(parser => parser()).FirstOrDefault(token => token != null);
 
+        public static Position CreateDummyPosition(int absoluteOffset) => new Position(0, absoluteOffset, absoluteOffset);
         private OperatorToken ParseOperator()
         {
             var initialPosition = _currentPosition;
             return KnownOperators.Contains(_text[_currentPosition].ToString()) 
-                ? new OperatorToken(_text[_currentPosition++].ToString(), initialPosition) 
+                ? new OperatorToken(_text[_currentPosition++].ToString(), 
+                    CreateDummyPosition(initialPosition), 
+                    CreateDummyPosition(initialPosition)) 
                 : null;
         }
 
@@ -62,14 +65,16 @@ namespace Expressions.Lexing
             }
 
             var value = _text.Substring(initialPosition, _currentPosition - initialPosition);
-            return new IdentifierToken(value, initialPosition);
+            return new IdentifierToken(value, CreateDummyPosition(initialPosition), CreateDummyPosition(_currentPosition - 1));
         }
 
         private LiteralToken ParseLiteral()
         {
             var initialPosition = _currentPosition;
             return char.IsDigit(_text[_currentPosition])
-                ? new LiteralToken(_text[_currentPosition++].ToString(), initialPosition)
+                ? new LiteralToken(_text[_currentPosition++].ToString(), 
+                    CreateDummyPosition(initialPosition), 
+                    CreateDummyPosition(initialPosition))
                 : null;
         }
         
@@ -77,8 +82,8 @@ namespace Expressions.Lexing
         {
             ParenToken result = _text[_currentPosition] switch
             {
-                '(' => new OpeningParenToken(_currentPosition),
-                ')' => new ClosingParenToken(_currentPosition),
+                '(' => new OpeningParenToken(CreateDummyPosition(_currentPosition), CreateDummyPosition(_currentPosition)),
+                ')' => new ClosingParenToken(CreateDummyPosition(_currentPosition), CreateDummyPosition(_currentPosition)),
                 _ => null
             };
 
