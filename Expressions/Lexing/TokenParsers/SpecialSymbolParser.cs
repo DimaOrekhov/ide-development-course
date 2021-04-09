@@ -58,7 +58,7 @@ namespace Expressions.Lexing.TokenParsers
 
         protected override ParsingResult GetCurrentResult(string text, Position start, Position end)
         {
-            var value = text.Substring(start.AbsoluteOffset, end.AbsoluteOffset - start.AbsoluteOffset);
+            var value = text.Substring(start.AbsoluteOffset, end.AbsoluteOffset - start.AbsoluteOffset + 1);
             throw new System.NotImplementedException();
         }
     }
