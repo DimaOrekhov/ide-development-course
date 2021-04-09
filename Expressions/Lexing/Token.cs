@@ -11,6 +11,20 @@ namespace Expressions.Lexing
         public readonly string Value;
         public readonly int Position;
     }
+
+    public record Position
+    {
+        public Position(int line, int offset, int absoluteOffset)
+        {
+            Line = line;
+            Offset = offset;
+            AbsoluteOffset = absoluteOffset;
+        }
+
+        public readonly int Line;
+        public readonly int Offset;
+        public readonly int AbsoluteOffset;
+    }
     
     public record OperatorToken : Token
     {
