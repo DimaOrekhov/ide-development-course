@@ -74,21 +74,18 @@ namespace Expressions.Lexing
             {
                 currentState = Transition(currentState, text, ref i);
 
-                // Break if nowhere to go:
-                if (currentState is DeadState)
-                {
-                    break;
-                }
-                
+                // TODO: rewrite currently it is wrong since Transition can pass over several chars
                 // Update position
                 if (text[i] == '\n')
                 {
                     passedLines++;
                     currentOffset = 0;
                 }
-                else
+
+                // Break if nowhere to go:
+                if (currentState is DeadState)
                 {
-                    currentOffset++;
+                    break;
                 }
 
                 if (!currentState.IsTerminal)
@@ -97,8 +94,11 @@ namespace Expressions.Lexing
                 }
                 
                 var currentPosition = new Position(line: initialPosition.Line + passedLines, offset: currentOffset, 
-                    absoluteOffset: i + 1); // TODO: Not sure about absoluteOffset
+                    absoluteOffset: i); // TODO: Not sure about absoluteOffset
                 result = GetCurrentResult(text, initialPosition, currentPosition);
+
+                i++;
+                currentOffset++;
             }
 
             result ??= new FailedParsingResult(); // TODO: Maybe add some info
@@ -120,12 +120,6 @@ namespace Expressions.Lexing
         protected override DfaState Transition(DfaState currentState, string text, ref int currentAbsoluteOffset)
         {
             var nextState = TransitionTable[GetStateIndex(currentState), GetSymbolIndex(text[currentAbsoluteOffset])];
-            
-            if (!(nextState is DeadState))
-            {
-                currentAbsoluteOffset++;
-            }
-            
             return nextState;
         }
     }
