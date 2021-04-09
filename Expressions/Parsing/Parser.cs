@@ -9,16 +9,16 @@ namespace Expressions.Parsing
         public static bool CanBeFollowedBy(this Token previous, Token next) => previous switch
         {
             OperatorToken op => op.CanBeFollowedBy(next),
-            VariableToken var => var.CanBeFollowedBy(next),
+            IdentifierToken var => var.CanBeFollowedBy(next),
             LiteralToken lit => lit.CanBeFollowedBy(next),
             ParenToken p => p.CanBeFollowedBy(next),
             _ => throw ParsingException.UnknownTokenType(previous)
         };
 
         private static bool CanBeFollowedBy(this OperatorToken previous, Token next) =>
-            next is LiteralToken || next is VariableToken || next is OpeningParenToken;
+            next is LiteralToken || next is IdentifierToken || next is OpeningParenToken;
 
-        private static bool CanBeFollowedBy(this VariableToken previous, Token next) =>
+        private static bool CanBeFollowedBy(this IdentifierToken previous, Token next) =>
             next is OperatorToken || next is ClosingParenToken;
 
         private static bool CanBeFollowedBy(this LiteralToken previous, Token next) =>
@@ -82,7 +82,7 @@ namespace Expressions.Parsing
                     case LiteralToken lit:
                         exprStack.Push(new Literal(lit.Value));
                         break;
-                    case VariableToken var:
+                    case IdentifierToken var:
                         exprStack.Push(new Variable(var.Value));
                         break;
                     case OperatorToken op:
