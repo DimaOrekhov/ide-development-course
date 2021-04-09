@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Expressions.Lexing;
+using Microsoft.Win32.SafeHandles;
 
 namespace Expressions.Parsing
 {
@@ -68,7 +69,8 @@ namespace Expressions.Parsing
             var exprStack = new Stack<IExpression>();
             var opStack = new Stack<OperatorOrParen>();
 
-            Token prevToken = new OpeningParenToken(-1); // Create only for CanBeFollowed call on first iteration
+            Token prevToken = new OpeningParenToken(LexedString.CreateDummyPosition(-1),
+                LexedString.CreateDummyPosition(-1)); // Create only for CanBeFollowed call on first iteration
             var numberOfUnmatchedParen = 0;
             foreach (var token in new LexedString(text))
             {
