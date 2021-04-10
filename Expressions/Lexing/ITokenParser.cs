@@ -31,10 +31,7 @@ namespace Expressions.Lexing
     {
         public abstract class DfaState
         {
-            public abstract bool IsTerminal
-            {
-                get;
-            }
+            public abstract bool IsTerminal { get; }
         }
 
         public class TerminalState : DfaState
@@ -52,20 +49,14 @@ namespace Expressions.Lexing
             public static readonly DeadState Instance = new();
         }
 
-        protected abstract DfaState InitialState
-        {
-            get;
-        }
-        
+        protected abstract DfaState InitialState { get; }
+
         protected abstract DfaState Transition(DfaState currentState, string text, ref int currentAbsoluteOffset);
 
         protected abstract ParsingResult GetCurrentResult(string text, Position start, Position end);
 
         public ParsingResult Parse(string text, Position initialPosition)
         {
-            var passedLines = 0;
-            var currentOffset = initialPosition.Offset;
-            
             var currentState = InitialState;
             var result = currentState.IsTerminal ? GetCurrentResult(text, initialPosition, initialPosition) : null;
 
@@ -73,14 +64,6 @@ namespace Expressions.Lexing
             while (i < text.Length)
             {
                 currentState = Transition(currentState, text, ref i);
-
-                // TODO: rewrite currently it is wrong since Transition can pass over several chars
-                // Update position
-                if (text[i] == '\n')
-                {
-                    passedLines++;
-                    currentOffset = 0;
-                }
 
                 // Break if nowhere to go:
                 if (currentState is DeadState)
@@ -92,30 +75,58 @@ namespace Expressions.Lexing
                 {
                     continue;
                 }
-                
-                var currentPosition = new Position(line: initialPosition.Line + passedLines, offset: currentOffset, 
-                    absoluteOffset: i); // TODO: Not sure about absoluteOffset
+
+                var lastPosition = GetPosition(result, initialPosition);
+                var currentPosition = GetCurrentPositions(text, lastPosition, i);
                 result = GetCurrentResult(text, initialPosition, currentPosition);
 
                 i++;
-                currentOffset++;
             }
 
-            result ??= new FailedParsingResult(); // TODO: Maybe add some info
+            result ??= new FailedParsingResult(); // TODO: Maybe add some info, e.g. up to where you could parse
             return result;
         }
+
+        private static Position GetPosition(ParsingResult result, Position defaultPosition) =>
+            result switch
+            {
+                null => defaultPosition,
+                FailedParsingResult => defaultPosition,
+                SuccessfulParsingResult s => s.Token.End
+            };
+
+        private static Position GetCurrentPositions(string text, Position lastPosition, int currentAbsoluteOffset)
+        {
+            var currentLine = lastPosition.Line;
+            var currentOffset = lastPosition.Offset;
+
+            // Kind of strange behaviour if token starts/ends with newline character,
+            // but I suppose there won't be such tokens
+            for (var i = lastPosition.AbsoluteOffset; i < currentAbsoluteOffset; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    currentLine++;
+                    currentOffset = 0;
+                }
+                else
+                {
+                    currentOffset++;
+                }
+            }
+
+            return new Position(currentLine, currentOffset, currentAbsoluteOffset);
+        }
     }
-    
+
     public abstract class TableDfaParser : DfaParser
     {
-        protected abstract DfaState[,] TransitionTable
-        {
-            get;
-        }
+        protected abstract DfaState[,] TransitionTable { get; }
 
         protected abstract int GetStateIndex(DfaState state);
 
-        protected abstract int GetSymbolIndex(char symbol); // TODO: maybee rename to get seq index and change signature to string + int
+        protected abstract int
+            GetSymbolIndex(char symbol); // TODO: maybee rename to get seq index and change signature to string + int
 
         protected override DfaState Transition(DfaState currentState, string text, ref int currentAbsoluteOffset)
         {
