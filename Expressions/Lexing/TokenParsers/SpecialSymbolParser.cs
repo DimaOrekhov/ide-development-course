@@ -44,7 +44,7 @@ namespace Expressions.Lexing.TokenParsers
         {
             var numberOfParsedSymbols = 0;
             var start = currentAbsoluteOffset;
-            if (TwoSymbolSpecials.FirstOrDefault(t => text.AsSpan(start, 2).SequenceEqual(t)) != default)
+            if (TwoSymbolSpecials.FirstOrDefault(t => text.AsSpan(start).StartsWith(t)) != default)
             {
                 numberOfParsedSymbols = 2;
             }
@@ -53,14 +53,15 @@ namespace Expressions.Lexing.TokenParsers
                 numberOfParsedSymbols = 1;
             }
 
-            currentAbsoluteOffset += numberOfParsedSymbols;
+            currentAbsoluteOffset += numberOfParsedSymbols - 1;
             return numberOfParsedSymbols != 0 ? Terminal : DeadState.Instance;
         }
 
         protected override ParsingResult GetCurrentResult(string text, Position start, Position end)
         {
             var value = text.Substring(start.AbsoluteOffset, end.AbsoluteOffset - start.AbsoluteOffset + 1);
-            throw new System.NotImplementedException();
+            var token = new SpecialSymbolToken(value, start, end);
+            return new SuccessfulParsingResult(token);
         }
     }
 }

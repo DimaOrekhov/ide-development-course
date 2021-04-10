@@ -27,6 +27,11 @@ namespace Expressions.Lexing
         public readonly int Offset;
         public readonly int AbsoluteOffset;
     }
+
+    public record SpecialSymbolToken : Token
+    {
+        public SpecialSymbolToken(string value, Position start, Position end) : base(value, start, end) {}
+    }
     
     public record OperatorToken : Token
     {
