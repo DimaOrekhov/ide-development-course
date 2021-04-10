@@ -36,18 +36,19 @@ namespace Expressions.Lexing.TokenParsers
         protected override DfaState Transition(DfaState currentState, string text, ref int currentAbsoluteOffset) =>
             currentState switch
             {
-                Initial => parseSpecialSymbol(text, ref currentAbsoluteOffset),
+                Initial => ParseSpecialSymbol(text, ref currentAbsoluteOffset),
                 TerminalState => DeadState.Instance
             };
 
-        private DfaState parseSpecialSymbol(string text, ref int currentAbsoluteOffset)
+        private static DfaState ParseSpecialSymbol(string text, ref int currentAbsoluteOffset)
         {
             var numberOfParsedSymbols = 0;
-            if (TwoSymbolSpecials.FirstOrDefault(text.StartsWith) != default)
+            var start = currentAbsoluteOffset;
+            if (TwoSymbolSpecials.FirstOrDefault(t => text.AsSpan(start, 2).SequenceEqual(t)) != default)
             {
                 numberOfParsedSymbols = 2;
             }
-            else if (SingleSymbolSpecials.FirstOrDefault(text.StartsWith) != default)
+            else if (SingleSymbolSpecials.FirstOrDefault(t => text[start] == t) != default)
             {
                 numberOfParsedSymbols = 1;
             }
