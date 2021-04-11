@@ -1,52 +1,39 @@
-using System;
-using System.Collections.Generic;
-
-namespace Expressions.Lexing
+namespace Expressions.Lexing.AbstractTokenParsers
 {
-    public interface ITokenParser
-    {
-        ParsingResult Parse(string text, Position initialPosition);
-    }
-
-    public class ParsingResult
-    {
-    }
-
-    public class SuccessfulParsingResult : ParsingResult
-    {
-        public readonly Token Token;
-
-        public SuccessfulParsingResult(Token token)
-        {
-            Token = token;
-        }
-    }
-
-    public class FailedParsingResult : ParsingResult
-    {
-    }
-
-
-    public abstract class DfaParser : ITokenParser
+    public abstract class DfaTokenParser : ITokenParser
     {
         public abstract class DfaState
         {
-            public abstract bool IsTerminal { get; }
+            public readonly bool IsTerminal;
+
+            protected DfaState(bool isTerminal)
+            {
+                IsTerminal = isTerminal;
+            }
         }
 
         public class TerminalState : DfaState
         {
-            public override bool IsTerminal => true;
+            public TerminalState() : base(true)
+            {
+            }
         }
 
         public class NonTerminalState : DfaState
         {
-            public override bool IsTerminal => false;
+            public NonTerminalState() : base(false)
+            {
+            }
         }
 
         public class DeadState : NonTerminalState
         {
             public static readonly DeadState Instance = new();
+        }
+
+        public class GeneralInitialState : NonTerminalState
+        {
+            public static readonly GeneralInitialState Instance = new();
         }
 
         protected abstract DfaState InitialState { get; }
@@ -77,7 +64,7 @@ namespace Expressions.Lexing
                 }
 
                 var lastPosition = GetPosition(result, initialPosition);
-                var currentPosition = GetCurrentPositions(text, lastPosition, i);
+                var currentPosition = LexingUtils.UpdatePosition(text, lastPosition, i);
                 result = GetCurrentResult(text, initialPosition, currentPosition);
 
                 i++;
@@ -102,6 +89,8 @@ namespace Expressions.Lexing
 
             // Kind of strange behaviour if token starts/ends with newline character,
             // but I suppose there won't be such tokens
+
+            // Maybe start with lastPosition.AbsoluteOffset + 1 and look at symbol i - 1?
             for (var i = lastPosition.AbsoluteOffset; i < currentAbsoluteOffset; i++)
             {
                 if (text[i] == '\n')
@@ -119,7 +108,7 @@ namespace Expressions.Lexing
         }
     }
 
-    public abstract class TableDfaParser : DfaParser
+    public abstract class TableDfaTokenParser : DfaTokenParser
     {
         protected abstract DfaState[,] TransitionTable { get; }
 

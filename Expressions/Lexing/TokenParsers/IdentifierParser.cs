@@ -1,8 +1,9 @@
 using System;
+using Expressions.Lexing.AbstractTokenParsers;
 
 namespace Expressions.Lexing.TokenParsers
 {
-    public class IdentifierParser : TableDfaParser
+    public class IdentifierParser : TableDfaTokenParser
     {
         // States:
         private class IdentifierInitial : NonTerminalState
