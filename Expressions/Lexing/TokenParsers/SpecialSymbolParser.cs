@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Expressions.Lexing.AbstractTokenParsers;
 
 namespace Expressions.Lexing.TokenParsers
 {
-    public class SpecialSymbolParser : DfaParser
+    public class SpecialSymbolParser : DfaTokenParser
     {
         // States:
         private class Initial : NonTerminalState
