@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Expressions.Lexing.AbstractTokenParsers;
 using Expressions.Lexing.Tokens;
 
@@ -14,14 +15,16 @@ namespace Expressions.Lexing.TokenParsers
                 new OptionalParser(SignParser),
                 new AlternativeParser(new List<ITokenParser>
                 {
-                    UnsignedIntegerParser,
-                    new UnsignedRealParser()
+                    new UnsignedRealParser(),
+                    UnsignedIntegerParser
                 })
             };
             
             protected override Token ResultsToToken(List<Token> results)
             {
-                throw new NotImplementedException();
+                var signToken = OptionalParser.ConvertOrNull<SignToken>(results[0]);
+                var number = (UnsignedNumberToken) results[1];
+                return new NumberToken(signToken, number);
             }
         }
         
