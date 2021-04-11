@@ -3,13 +3,13 @@ using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing
 {
-    public abstract record NumberToken : CompoundToken
+    public record NumberToken : CompoundToken
     {
         public readonly SignToken Sign;
         public readonly UnsignedNumberToken Number;
 
-        protected NumberToken(SignToken sign, UnsignedNumberToken numberToken, Position start, Position end) 
-            : base(start, end)
+        public NumberToken(SignToken sign, UnsignedNumberToken numberToken) 
+            : base(sign?.Start ?? numberToken.Start, numberToken.End)
         {
             Sign = sign;
             Number = numberToken;
