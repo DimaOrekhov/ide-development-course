@@ -26,12 +26,12 @@ namespace Expressions.Lexing.AbstractTokenParsers
     {
         protected abstract IEnumerable<ITokenParser> Parsers { get; }
 
-        protected abstract ElementaryToken ResultsToToken(List<ElementaryToken> results);
+        protected abstract Token ResultsToToken(List<Token> results);
 
         public ParsingResult Parse(string text, Position initialPosition)
         {
             var currentPosition = initialPosition;
-            var results = new List<ElementaryToken>();
+            var results = new List<Token>();
 
             foreach (var parser in Parsers)
             {
