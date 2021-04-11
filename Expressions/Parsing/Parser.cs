@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Expressions.Lexing;
+using Expressions.Lexing.Tokens;
 using Microsoft.Win32.SafeHandles;
 
 namespace Expressions.Parsing
 {
     public static class TokenExtensions
     {
-        public static bool CanBeFollowedBy(this Token previous, Token next) => previous switch
+        public static bool CanBeFollowedBy(this ElementaryToken previous, ElementaryToken next) => previous switch
         {
             OperatorToken op => op.CanBeFollowedBy(next),
             IdentifierToken var => var.CanBeFollowedBy(next),
@@ -16,16 +17,16 @@ namespace Expressions.Parsing
             _ => throw ParsingException.UnknownTokenType(previous)
         };
 
-        private static bool CanBeFollowedBy(this OperatorToken previous, Token next) =>
+        private static bool CanBeFollowedBy(this OperatorToken previous, ElementaryToken next) =>
             next is LiteralToken || next is IdentifierToken || next is OpeningParenToken;
 
-        private static bool CanBeFollowedBy(this IdentifierToken previous, Token next) =>
+        private static bool CanBeFollowedBy(this IdentifierToken previous, ElementaryToken next) =>
             next is OperatorToken || next is ClosingParenToken;
 
-        private static bool CanBeFollowedBy(this LiteralToken previous, Token next) =>
+        private static bool CanBeFollowedBy(this LiteralToken previous, ElementaryToken next) =>
             next is OperatorToken || next is ClosingParenToken;
 
-        private static bool CanBeFollowedBy(this ParenToken previous, Token next) => previous switch
+        private static bool CanBeFollowedBy(this ParenToken previous, ElementaryToken next) => previous switch
         {
             OpeningParenToken => next is not OperatorToken,
             ClosingParenToken => next is OperatorToken || next is ClosingParenToken,
@@ -69,7 +70,7 @@ namespace Expressions.Parsing
             var exprStack = new Stack<IExpression>();
             var opStack = new Stack<OperatorOrParen>();
 
-            Token prevToken = new OpeningParenToken(LexedString.CreateDummyPosition(-1),
+            ElementaryToken prevToken = new OpeningParenToken(LexedString.CreateDummyPosition(-1),
                 LexedString.CreateDummyPosition(-1)); // Create only for CanBeFollowed call on first iteration
             var numberOfUnmatchedParen = 0;
             foreach (var token in new LexedString(text))
@@ -186,7 +187,7 @@ namespace Expressions.Parsing
             } while (opStack.Count > 0);
         }
 
-        private static void ValidateEndOfParsing(Token lastToken, int numberOfUnmatchedParen)
+        private static void ValidateEndOfParsing(ElementaryToken lastToken, int numberOfUnmatchedParen)
         {
             if (lastToken is OperatorToken)
             {

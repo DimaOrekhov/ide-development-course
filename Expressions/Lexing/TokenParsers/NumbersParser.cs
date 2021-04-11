@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Expressions.Lexing.AbstractTokenParsers;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing.TokenParsers
 {
-    public record SignedNumberToken : Token
+    public record SignedNumberToken : ElementaryToken
     {
         public SignedNumberToken(string value, Position start, Position end) : base(value, start, end)
         {
@@ -10,7 +13,7 @@ namespace Expressions.Lexing.TokenParsers
         }
     }
 
-    public record SignToken : Token
+    public record SignToken : ElementaryToken
     {
         public SignToken(string value, Position start, Position end) : base(value, start, end)
         {
@@ -66,6 +69,42 @@ namespace Expressions.Lexing.TokenParsers
         protected override int GetSymbolIndex(char symbol)
         {
             throw new System.NotImplementedException();
+        }
+    }
+
+    public class DigitSequenceParser : PredicateTokenParser
+    {
+        protected override Predicate<char> Predicate => char.IsDigit;
+        
+        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class HexDigitSequenceParser : PredicateTokenParser
+    {
+        private static bool IsHexDigit(char obj) =>
+            char.IsDigit(obj)
+            || obj >= 'A' && obj <= 'F'
+            || obj >= 'a' && obj <= 'f';
+        
+        protected override Predicate<char> Predicate => IsHexDigit;
+
+        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+    public class HexIntegerParser : SequentialParser
+    {
+        protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser> 
+            {new SingleCharacterParser('$'), new HexDigitSequenceParser()};
+        
+        protected override ElementaryToken ResultsToToken(List<ElementaryToken> results)
+        {
+            throw new NotImplementedException();
         }
     }
 }

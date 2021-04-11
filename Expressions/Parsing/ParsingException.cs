@@ -1,5 +1,6 @@
 using System;
 using Expressions.Lexing;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Parsing
 {
@@ -9,13 +10,13 @@ namespace Expressions.Parsing
         {
         }
 
-        public static ParsingException UnknownTokenType(Token token) => 
+        public static ParsingException UnknownTokenType(ElementaryToken token) => 
             new ($"Unknown token type: {token.GetType().Name}");
 
-        public static ParsingException UnknownOperatorToken(Token token) =>
+        public static ParsingException UnknownOperatorToken(ElementaryToken token) =>
             new($"Unknown operator token {token.Value} at position {token.Start}");
 
-        public static ParsingException UnexpectedToken(Token token) =>
+        public static ParsingException UnexpectedToken(ElementaryToken token) =>
             new($"Unexpected token: {token.Value} at position {token.Start}");
 
         public static ParsingException UnexpectedEof() => new ("Unexpected EOF");

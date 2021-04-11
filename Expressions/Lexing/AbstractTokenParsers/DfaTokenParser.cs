@@ -1,3 +1,5 @@
+using Expressions.Lexing.Tokens;
+
 namespace Expressions.Lexing.AbstractTokenParsers
 {
     public abstract class DfaTokenParser : ITokenParser

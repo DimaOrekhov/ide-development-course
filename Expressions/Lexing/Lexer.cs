@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing
 {
-    public class LexedString : IEnumerable<Token>
+    public class LexedString : IEnumerable<ElementaryToken>
     {
-        private delegate Token ElementaryParser();
+        private delegate ElementaryToken ElementaryParser();
 
         private static readonly List<string> KnownOperators = new(){"+", "-", "*", "/"};
         private readonly string _text;
@@ -31,7 +32,7 @@ namespace Expressions.Lexing
         
         private bool HasTextLeft() => _currentPosition < _text.Length;
 
-        private Token ParseNextToken() => _parsers.Select(parser => parser()).FirstOrDefault(token => token != null);
+        private ElementaryToken ParseNextToken() => _parsers.Select(parser => parser()).FirstOrDefault(token => token != null);
 
         public static Position CreateDummyPosition(int absoluteOffset) => new Position(0, absoluteOffset, absoluteOffset);
         private OperatorToken ParseOperator()
@@ -95,7 +96,7 @@ namespace Expressions.Lexing
             return result;
         }
         
-        public IEnumerator<Token> GetEnumerator()
+        public IEnumerator<ElementaryToken> GetEnumerator()
         {
             while (HasTextLeft())
             {

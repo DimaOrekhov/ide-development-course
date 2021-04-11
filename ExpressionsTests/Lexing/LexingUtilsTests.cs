@@ -1,4 +1,6 @@
+using System;
 using Expressions.Lexing;
+using Expressions.Lexing.Tokens;
 using NUnit.Framework;
 
 namespace ExpressionsTests

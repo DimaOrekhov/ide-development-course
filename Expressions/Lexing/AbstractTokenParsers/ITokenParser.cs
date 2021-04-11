@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing
 {
@@ -16,9 +17,9 @@ namespace Expressions.Lexing
 
     public class SuccessfulParsingResult : ParsingResult
     {
-        public readonly Token Token;
+        public readonly ElementaryToken Token;
 
-        public SuccessfulParsingResult(Token token)
+        public SuccessfulParsingResult(ElementaryToken token)
         {
             Token = token;
         }
@@ -35,7 +36,7 @@ namespace Expressions.Lexing
             get;
         }
 
-        protected abstract Token MatchToToken(Match match);
+        protected abstract ElementaryToken MatchToToken(Match match);
 
         public ParsingResult Parse(string text, Position initialPosition)
         {
@@ -67,7 +68,7 @@ namespace Expressions.Lexing
         public ParsingResult Parse(string text, Position initialPosition)
         {
             var currentPosition = initialPosition;
-            var tokens = new List<Token>();
+            var tokens = new List<ElementaryToken>();
             
             foreach (var parser in Parsers)
             {
