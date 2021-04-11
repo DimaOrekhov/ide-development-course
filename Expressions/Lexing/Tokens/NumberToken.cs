@@ -90,10 +90,14 @@ namespace Expressions.Lexing
 
     public record FractionToken : CompoundToken
     {
+        public readonly DotToken DotToken;
+        public readonly DecimalDigitSequence DigitSequence;
         
-        
-        public FractionToken(DotToken dotToken, DecimalDigitSequence digitSequence) : base(dotToken.Start, digitSequence.End)
+        public FractionToken(DotToken dotToken, DecimalDigitSequence digitSequence) 
+            : base(dotToken.Start, digitSequence.End)
         {
+            DotToken = dotToken;
+            DigitSequence = digitSequence;
         }
     }
     
@@ -110,14 +114,18 @@ namespace Expressions.Lexing
         public readonly SignToken Sign;
         public readonly DecimalDigitSequence ScaleValue;
         
-        public ScaleFactorToken(Position start, Position end) : base(start, end)
+        public ScaleFactorToken(ScaleToken scaleToken, SignToken sign, DecimalDigitSequence scaleValue) 
+            : base(scaleToken.Start, scaleValue.End)
         {
+            ScaleToken = scaleToken;
+            Sign = sign;
+            ScaleValue = scaleValue;
         }
     }
 
     public record ScaleToken : ElementaryToken
     {
-        public ScaleToken(string value, Position start, Position end) : base(value, start, end)
+        public ScaleToken(string value, Position start) : base(value, start, start)
         {
         }
     }
