@@ -17,9 +17,9 @@ namespace Expressions.Lexing
 
     public class SuccessfulParsingResult : ParsingResult
     {
-        public readonly ElementaryToken Token;
+        public readonly Token Token;
 
-        public SuccessfulParsingResult(ElementaryToken token)
+        public SuccessfulParsingResult(Token token)
         {
             Token = token;
         }
@@ -68,7 +68,7 @@ namespace Expressions.Lexing
         public ParsingResult Parse(string text, Position initialPosition)
         {
             var currentPosition = initialPosition;
-            var tokens = new List<ElementaryToken>();
+            var tokens = new List<Token>();
             
             foreach (var parser in Parsers)
             {

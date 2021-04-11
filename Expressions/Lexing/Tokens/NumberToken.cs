@@ -141,11 +141,13 @@ namespace Expressions.Lexing
     
     public record UnsignedBinaryInteger : UnsignedIntegerToken
     {
-        public readonly PercentToken Percent;
+        public readonly PercentToken PercentTokenToken;
         public readonly BinaryDigitSequence DigitSequence;
         
-        public UnsignedBinaryInteger(PercentToken percent, BinaryDigitSequence digitSequence) : base(percent.Start, digitSequence.End)
+        public UnsignedBinaryInteger(PercentToken percentToken, BinaryDigitSequence digitSequence) 
+            : base(percentToken.Start, digitSequence.End)
         {
+            PercentTokenToken = percentToken;
             DigitSequence = digitSequence;
         }
     }
@@ -180,11 +182,12 @@ namespace Expressions.Lexing
     public record UnsignedHexInteger : UnsignedIntegerToken
     {
         public readonly DollarSignToken DollarSignToken;
-        public readonly DecimalDigitSequence DigitSequence;
+        public readonly HexDigitSequence DigitSequence;
         
-        public UnsignedHexInteger(DollarSignToken dollarSignToken, DecimalDigitSequence digitSequence) 
+        public UnsignedHexInteger(DollarSignToken dollarSignToken, HexDigitSequence digitSequence) 
             : base(dollarSignToken.Start, digitSequence.End)
         {
+            DollarSignToken = dollarSignToken;
             DigitSequence = digitSequence;
         }
     }
