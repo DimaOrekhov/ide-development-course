@@ -1,0 +1,198 @@
+using System;
+using Expressions.Lexing.Tokens;
+
+namespace Expressions.Lexing
+{
+    public abstract record NumberToken : CompoundToken
+    {
+        public readonly SignToken Sign;
+        public readonly UnsignedNumberToken Number;
+
+        protected NumberToken(SignToken sign, UnsignedNumberToken numberToken, Position start, Position end) 
+            : base(start, end)
+        {
+            Sign = sign;
+            Number = numberToken;
+        }
+    }
+    
+    public abstract record SignToken : SpecialSymbolToken
+    {
+        protected SignToken(string value, Position start) : base(value, start, start)
+        {
+        }
+    }
+
+    public record PlusSignToken : SignToken
+    {
+        public PlusSignToken(Position start) : base("+", start)
+        {
+        }
+    }
+
+    public record MinusSignToken : SignToken
+    {
+        public MinusSignToken(Position start) : base("-", start)
+        {
+        }
+    }
+
+    public abstract record UnsignedNumberToken : CompoundToken
+    {
+        protected UnsignedNumberToken(Position start, Position end) : base(start, end)
+        {
+        }
+    }
+
+    public record BinaryDigitSequence : ElementaryToken
+    {
+        public BinaryDigitSequence(string value, Position start, Position end) : base(value, start, end)
+        {
+        }
+    }
+
+    public record OctalDigitSequence : ElementaryToken
+    {
+        public OctalDigitSequence(string value, Position start, Position end) : base(value, start, end)
+        {
+        }
+    }
+    
+    public record DecimalDigitSequence : ElementaryToken
+    {
+        public DecimalDigitSequence(string value, Position start, Position end) : base(value, start, end)
+        {
+        }
+    }
+
+    public record HexDigitSequence : ElementaryToken
+    {
+        public HexDigitSequence(string value, Position start, Position end) : base(value, start, end)
+        {
+        }
+    }
+    
+    public record UnsignedRealNumber : UnsignedNumberToken
+    {
+        public readonly DecimalDigitSequence IntegerToken;
+        public readonly FractionToken FractionToken;
+        public readonly ScaleFactorToken ScaleFactorToken;
+        
+        public UnsignedRealNumber(DecimalDigitSequence integerToken, FractionToken fractionToken = null, ScaleFactorToken scaleFactorToken = null)
+            : base(integerToken.Start, 
+                scaleFactorToken?.End ?? fractionToken?.End ?? integerToken.End)
+        {
+            IntegerToken = integerToken;
+            FractionToken = fractionToken;
+            ScaleFactorToken = scaleFactorToken;
+        }
+    }
+
+    public record FractionToken : CompoundToken
+    {
+        
+        
+        public FractionToken(DotToken dotToken, DecimalDigitSequence digitSequence) : base(dotToken.Start, digitSequence.End)
+        {
+        }
+    }
+    
+    public record DotToken : ElementaryToken
+    {
+        public DotToken(Position start) : base(".", start, start)
+        {
+        }
+    }
+
+    public record ScaleFactorToken : CompoundToken
+    {
+        public readonly ScaleToken ScaleToken;
+        public readonly SignToken Sign;
+        public readonly DecimalDigitSequence ScaleValue;
+        
+        public ScaleFactorToken(Position start, Position end) : base(start, end)
+        {
+        }
+    }
+
+    public record ScaleToken : ElementaryToken
+    {
+        public ScaleToken(string value, Position start, Position end) : base(value, start, end)
+        {
+        }
+    }
+
+    public abstract record UnsignedIntegerToken : UnsignedNumberToken
+    {
+        protected UnsignedIntegerToken(Position start, Position end) : base(start, end)
+        {
+        }
+    }
+
+    public record UnsignedDecimalInteger : UnsignedIntegerToken
+    {
+        public readonly DecimalDigitSequence DigitSequence;
+        
+        public UnsignedDecimalInteger(DecimalDigitSequence digitSequence) : base(digitSequence.Start, digitSequence.End)
+        {
+            DigitSequence = digitSequence;
+        }
+    }
+    
+    public record UnsignedBinaryInteger : UnsignedIntegerToken
+    {
+        public readonly PercentToken Percent;
+        public readonly BinaryDigitSequence DigitSequence;
+        
+        public UnsignedBinaryInteger(PercentToken percent, BinaryDigitSequence digitSequence) : base(percent.Start, digitSequence.End)
+        {
+            DigitSequence = digitSequence;
+        }
+    }
+
+    public record PercentToken : ElementaryToken
+    {
+        public PercentToken(Position start) : base("%", start, start)
+        {
+        }
+    }
+    
+    public record UnsignedOctalInteger : UnsignedIntegerToken
+    {
+        public readonly AmpersandToken AmpersandToken;
+        public readonly OctalDigitSequence DigitSequence;
+        
+        public UnsignedOctalInteger(AmpersandToken ampersandToken, OctalDigitSequence digitSequence) 
+            : base(ampersandToken.Start, digitSequence.End)
+        {
+            AmpersandToken = ampersandToken;
+            DigitSequence = digitSequence;
+        }
+    }
+
+    public record AmpersandToken : ElementaryToken
+    {
+        public AmpersandToken(Position start) : base("&", start, start)
+        {
+        }
+    }
+    
+    public record UnsignedHexInteger : UnsignedIntegerToken
+    {
+        public readonly DollarSignToken DollarSignToken;
+        public readonly DecimalDigitSequence DigitSequence;
+        
+        public UnsignedHexInteger(DollarSignToken dollarSignToken, DecimalDigitSequence digitSequence) 
+            : base(dollarSignToken.Start, digitSequence.End)
+        {
+            DigitSequence = digitSequence;
+        }
+    }
+
+    public record DollarSignToken : ElementaryToken
+    {
+        public DollarSignToken(Position start) : base("$", start, start)
+        {
+        }
+    }
+}

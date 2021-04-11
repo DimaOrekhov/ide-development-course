@@ -1,5 +1,6 @@
 using System;
 using Expressions.Lexing.AbstractTokenParsers;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing.TokenParsers
 {
@@ -41,7 +42,7 @@ namespace Expressions.Lexing.TokenParsers
 
         protected override int GetSymbolIndex(char symbol) => symbol switch
         {
-            var c when char.IsLetter(c) => 0,
+            var c when c.IsLatinLetter() => 0,
             var c when c == '_' => 1,
             var c when char.IsDigit(c) => 2,
             _ => 3

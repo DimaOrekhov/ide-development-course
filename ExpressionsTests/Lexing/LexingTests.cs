@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Expressions.Lexing;
+using Expressions.Lexing.Tokens;
 using NUnit.Framework;
 
 namespace ExpressionsTests
 {
     public static class TokenDumpExtensions
     {
-        public static string Dump(this Token tok) => tok switch
+        public static string Dump(this ElementaryToken tok) => tok switch
         {
             OperatorToken op => op.Dump(),
             IdentifierToken var => var.Dump(),

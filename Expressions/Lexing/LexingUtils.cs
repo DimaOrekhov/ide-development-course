@@ -1,3 +1,5 @@
+using Expressions.Lexing.Tokens;
+
 namespace Expressions.Lexing
 {
     public static class LexingUtils
@@ -22,5 +24,9 @@ namespace Expressions.Lexing
 
             return new Position(currentLine, currentOffset, currentAbsoluteOffset);
         }
+
+        public static bool IsLatinLetter(this char character) =>
+            character >= 'A' && character <= 'Z' 
+            || character >= 'a' && character <= 'z';
     }
 }

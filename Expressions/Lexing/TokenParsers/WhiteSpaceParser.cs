@@ -1,9 +1,10 @@
 using System;
 using Expressions.Lexing.AbstractTokenParsers;
+using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing.TokenParsers
 {
-    public record WhiteSpaceToken : Token
+    public record WhiteSpaceToken : ElementaryToken
     {
         public WhiteSpaceToken(string value, Position start, Position end) : base(value, start, end)
         {
@@ -14,7 +15,7 @@ namespace Expressions.Lexing.TokenParsers
     {
         protected override Predicate<char> Predicate => char.IsWhiteSpace;
         
-        protected override Token MatchedSymbolsToToken(string match, Position start, Position end)
+        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end)
         {
             throw new NotImplementedException();
         }
