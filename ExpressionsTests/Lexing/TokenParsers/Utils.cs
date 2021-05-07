@@ -27,8 +27,10 @@ namespace ExpressionsTests.Lexing.TokenParsers
             Assert.AreEqual(end, token.End);
         }
 
-        public static T ParseToken<T>(this ITokenParser parser, string text, Position start) where T : Token
+        public static T ParseToken<T>(this ITokenParser parser, string text, Position start = null) where T : Token
         {
+            start ??= InitialPosition;
+            
             var parsingResult = parser.Parse(text, start);
             Assert.IsInstanceOf<SuccessfulParsingResult>(parsingResult);
 
@@ -36,5 +38,10 @@ namespace ExpressionsTests.Lexing.TokenParsers
             Assert.IsInstanceOf<T>(token);
             return (T) token;
         }
+
+        public static void AssertParsingFails(this ITokenParser parser, string text, Position start = null) =>
+            Assert.IsInstanceOf<FailedParsingResult>(parser.Parse(text, start ?? InitialPosition));
+        
+        public static string JoinLines(params string[] lines) => string.Join('\n', lines);
     }
 }
