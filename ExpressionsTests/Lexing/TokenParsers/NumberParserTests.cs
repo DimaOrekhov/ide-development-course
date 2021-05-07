@@ -10,10 +10,10 @@ namespace ExpressionsTests.Lexing.TokenParsers
         public void Test1()
         {
             var parser = NumberParser.UnsignedIntegerParser;
-            parser.ParseAndAssertIsInstance("%01010", Utils.InitialPosition, typeof(UnsignedBinaryInteger));
-            parser.ParseAndAssertIsInstance("&07020", Utils.InitialPosition, typeof(UnsignedOctalInteger));
-            parser.ParseAndAssertIsInstance("$AF112", Utils.InitialPosition, typeof(UnsignedHexInteger));
-            parser.ParseAndAssertIsInstance("12304", Utils.InitialPosition, typeof(UnsignedDecimalInteger));
+            parser.ParseToken<UnsignedBinaryInteger>("%01010", Utils.InitialPosition);
+            parser.ParseToken<UnsignedOctalInteger>("&07020", Utils.InitialPosition);
+            parser.ParseToken<UnsignedHexInteger>("$AF112", Utils.InitialPosition);
+            parser.ParseToken<UnsignedDecimalInteger>("12304", Utils.InitialPosition);
         }
 
         [Test]

@@ -1,6 +1,7 @@
 using System;
 using Expressions.Lexing;
 using Expressions.Lexing.AbstractTokenParsers;
+using Expressions.Lexing.TokenParsers;
 using Expressions.Lexing.Tokens;
 using NUnit.Framework;
 
@@ -26,13 +27,14 @@ namespace ExpressionsTests.Lexing.TokenParsers
             Assert.AreEqual(end, token.End);
         }
 
-        public static void ParseAndAssertIsInstance(this ITokenParser parser, string text, Position start, Type type)
+        public static T ParseToken<T>(this ITokenParser parser, string text, Position start) where T : Token
         {
             var parsingResult = parser.Parse(text, start);
             Assert.IsInstanceOf<SuccessfulParsingResult>(parsingResult);
 
             var token = ((SuccessfulParsingResult) parsingResult).Token;
-            Assert.IsInstanceOf(type, token);
+            Assert.IsInstanceOf<T>(token);
+            return (T) token;
         }
     }
 }
