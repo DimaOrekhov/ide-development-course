@@ -22,7 +22,7 @@ namespace Expressions.Lexing.TokenParsers
         private static readonly List<char> SingleSymbolSpecials = new()
         {
             '\'', '+', '-', '*', '/', '=', '<', '>',
-            '[', ']', '.', ',', '(', ')', ':', '^', '@',
+            '[', ']', '.', ',', '(', ')', ':', ';', '^', '@',
             '{', '}', '$', '#', '&', '%'
         };
 
