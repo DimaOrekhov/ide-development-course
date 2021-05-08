@@ -7,7 +7,7 @@ using Expressions.Lexing.TokenParsers;
 using Expressions.Lexing.Tokens;
 using NUnit.Framework;
 
-namespace ExpressionsTests.Lexing.TokenParsers
+namespace ExpressionsTests.Lexing.TokenParsers.CommentParser
 {
     public abstract class CommentTypeTree
     {
@@ -81,21 +81,6 @@ namespace ExpressionsTests.Lexing.TokenParsers
             new CommentTypeNode<LineComment>(
                 new CommentTypeNode<CurlyBracketComment>(), new CommentTypeNode<RoundBracketComment>(), new CommentTypeNode<LineComment>()
             ));
-
-        [Test]
-        public void TestSingleLineComment_FailsWhenNewlineInNested()
-        {
-            Parser.AssertParsingFails("// Hello world { Oops \n }");
-            Parser.AssertParsingFails("// Hello world (* Oops \n )*");
-        }
-
-        [Test]
-        public void TestSingleLineComment_FailsWhenNestedIncomplete()
-        {
-            Parser.AssertParsingFails("// Some text (* Another text");
-            Parser.AssertParsingFails("// More text { More text");
-            Parser.AssertParsingFails("// Bye { (* Hello *) World");
-        }
 
         [Test]
         public void TestRoundComment_SingleLine() => SimpleCommentTest<RoundBracketComment>("(* What a great day today is *)");
