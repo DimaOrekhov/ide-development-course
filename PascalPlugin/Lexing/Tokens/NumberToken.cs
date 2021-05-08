@@ -1,7 +1,4 @@
-using System;
-using Expressions.Lexing.Tokens;
-
-namespace Expressions.Lexing
+namespace Expressions.Lexing.Tokens
 {
     public record NumberToken : CompoundToken
     {

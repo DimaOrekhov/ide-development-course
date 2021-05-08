@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expressions", "Expressions\Expressions.csproj", "{5D904BC0-5418-4576-AAE7-9E01FB88B561}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalPlugin", "PascalPlugin\PascalPlugin.csproj", "{5D904BC0-5418-4576-AAE7-9E01FB88B561}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionsTests", "ExpressionsTests\ExpressionsTests.csproj", "{2BFC703F-6CA7-437E-8781-92A3C0376D46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2BFC703F-6CA7-437E-8781-92A3C0376D46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
