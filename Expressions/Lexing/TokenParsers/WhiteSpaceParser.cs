@@ -14,10 +14,8 @@ namespace Expressions.Lexing.TokenParsers
     public class WhiteSpaceParser : PredicateTokenParser
     {
         protected override Predicate<char> Predicate => char.IsWhiteSpace;
-        
-        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end)
-        {
-            throw new NotImplementedException();
-        }
+
+        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end) =>
+            new WhiteSpaceToken(match, start, end);
     }
 }

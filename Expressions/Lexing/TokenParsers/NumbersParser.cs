@@ -13,11 +13,9 @@ namespace Expressions.Lexing.TokenParsers
             protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
             {
                 new OptionalParser(SignParser),
-                new AlternativeParser(new List<ITokenParser>
-                {
-                    new UnsignedRealParser(),
-                    UnsignedIntegerParser
-                })
+                new AlternativeParser(
+                    new UnsignedRealParser(), UnsignedIntegerParser
+                )
             };
             
             protected override Token ResultsToToken(List<Token> results)
@@ -28,11 +26,10 @@ namespace Expressions.Lexing.TokenParsers
             }
         }
         
-        public static readonly AlternativeParser SignParser = new(new List<ITokenParser>
-        {
+        public static readonly AlternativeParser SignParser = new(
             new SingleCharacterParser('+', (_, pos) => new PlusSignToken(pos)),
             new SingleCharacterParser('-', (_, pos) => new MinusSignToken(pos))
-        });
+        );
         
         public class UnsignedRealParser : SequentialParser
         {
@@ -68,11 +65,10 @@ namespace Expressions.Lexing.TokenParsers
         {
             protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
             {
-                new AlternativeParser(new List<ITokenParser>
-                {
+                new AlternativeParser(
                     new SingleCharacterParser('e', (t, pos) => new ScaleToken(t, pos)),
                     new SingleCharacterParser('E', (t, pos) => new ScaleToken(t, pos))
-                }),
+                ),
                 new OptionalParser(SignParser),
                 new DecimalDigitSequenceParser()
             };
@@ -85,10 +81,10 @@ namespace Expressions.Lexing.TokenParsers
             }
         }
 
-        public static readonly AlternativeParser UnsignedIntegerParser = new(new List<ITokenParser>
-        {
-            new BinaryIntegerParser(), new OctalIntegerParser(), new DecimalIntegerParser(), new HexIntegerParser()
-        });
+        public static readonly AlternativeParser UnsignedIntegerParser = new(
+            new BinaryIntegerParser(), new OctalIntegerParser(), 
+            new DecimalIntegerParser(), new HexIntegerParser()
+        );
 
         public class BinaryIntegerParser : SequentialParser
         {
