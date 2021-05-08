@@ -144,7 +144,7 @@ namespace Expressions.Lexing.AbstractTokenParsers
                 currentPosition = LexingUtils.UpdatePosition(text, currentPosition, currentAbsoluteOffset);
             }
 
-            return _mergeFunction(tokens);
+            return tokens.Count == 0 ? new FailedParsingResult() : _mergeFunction(tokens);
         }
     }
 }
