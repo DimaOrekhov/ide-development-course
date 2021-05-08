@@ -1,118 +1,65 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Expressions.Lexing.AbstractTokenParsers;
+using Expressions.Lexing.TokenParsers;
 using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing
-{
-    public class LexedString : IEnumerable<ElementaryToken>
+{ 
+    public static class Lexer
     {
-        private delegate ElementaryToken ElementaryParser();
+        private static readonly ITokenParser StepParser = new AlternativeParser(
+            new NumberParser(), 
+            new IdentifierParser(), 
+            new GeneralCommentParser(), 
+            CharacterStringParser.Instance, 
+            new SpecialSymbolParser());
 
-        private static readonly List<string> KnownOperators = new(){"+", "-", "*", "/"};
-        private readonly string _text;
-        private int _currentPosition;
-        private readonly List<ElementaryParser> _parsers;
+        private static readonly WhiteSpaceParser WhiteSpaceParser = new WhiteSpaceParser();
+        private static readonly Position StartPosition = new Position(0, 0, 0);
         
-        public LexedString(string text)
+        public static List<Token> Lex(string text, int absoluteOffset)
         {
-            _text = text;
-            _currentPosition = 0;
-            _parsers = new List<ElementaryParser> {ParseOperator, ParseIdentifier, ParseLiteral, ParseParen};
-            SkipWhiteSpace();
-        }
-
-        private void SkipWhiteSpace()
-        {
-            while (_currentPosition < _text.Length && char.IsWhiteSpace(_text[_currentPosition]))
-            {
-                _currentPosition++;
-            }
+            var initialPosition = LexingUtils.UpdatePosition(text, StartPosition, absoluteOffset);
+            return Lex(text, initialPosition);
         }
         
-        private bool HasTextLeft() => _currentPosition < _text.Length;
-
-        private ElementaryToken ParseNextToken() => _parsers.Select(parser => parser()).FirstOrDefault(token => token != null);
-
-        public static Position CreateDummyPosition(int absoluteOffset) => new Position(0, absoluteOffset, absoluteOffset);
-        private OperatorToken ParseOperator()
+        public static List<Token> Lex(string text, Position initialPosition)
         {
-            var initialPosition = _currentPosition;
-            return KnownOperators.Contains(_text[_currentPosition].ToString()) 
-                ? new OperatorToken(_text[_currentPosition++].ToString(), 
-                    CreateDummyPosition(initialPosition), 
-                    CreateDummyPosition(initialPosition)) 
-                : null;
-        }
-
-        private IdentifierToken ParseIdentifier()
-        {
-            var initialPosition = _currentPosition;
-            
-            if (char.IsLetter(_text[_currentPosition]) || _text[_currentPosition] == '_')
+            var tokens = new List<Token>();
+            var currentPosition = initialPosition;
+            while (currentPosition.AbsoluteOffset < text.Length)
             {
-                _currentPosition++;
-            }
-            else
-            {
-                return null;
-            }
-
-            while (HasTextLeft() && 
-                   (char.IsLetterOrDigit(_text[_currentPosition]) 
-                    || _text[_currentPosition] == '_'))
-            {
-                _currentPosition++;
-            }
-
-            var value = _text.Substring(initialPosition, _currentPosition - initialPosition);
-            return new IdentifierToken(value, CreateDummyPosition(initialPosition), CreateDummyPosition(_currentPosition - 1));
-        }
-
-        private LiteralToken ParseLiteral()
-        {
-            var initialPosition = _currentPosition;
-            return char.IsDigit(_text[_currentPosition])
-                ? new LiteralToken(_text[_currentPosition++].ToString(), 
-                    CreateDummyPosition(initialPosition), 
-                    CreateDummyPosition(initialPosition))
-                : null;
-        }
-        
-        private ParenToken ParseParen()
-        {
-            ParenToken result = _text[_currentPosition] switch
-            {
-                '(' => new OpeningParenToken(CreateDummyPosition(_currentPosition), CreateDummyPosition(_currentPosition)),
-                ')' => new ClosingParenToken(CreateDummyPosition(_currentPosition), CreateDummyPosition(_currentPosition)),
-                _ => null
-            };
-
-            if (result != null)
-            {
-                _currentPosition++;
-            }
-
-            return result;
-        }
-        
-        public IEnumerator<ElementaryToken> GetEnumerator()
-        {
-            while (HasTextLeft())
-            {
-                var nextToken = ParseNextToken();
-                if (nextToken == null)
+                // Skip whitespace if needed
+                var whiteSpaceResult = WhiteSpaceParser.Parse(text, currentPosition);
+                switch (whiteSpaceResult)
                 {
-                    yield break;
+                    case FailedParsingResult f: break;
+                    case SuccessfulParsingResult s:
+                        var whiteSpaceToken = s.Token;
+                        tokens.Add(whiteSpaceToken);
+                        var currentAbsoluteOffset = whiteSpaceToken.End.AbsoluteOffset + 1;
+                        if (currentAbsoluteOffset >= text.Length)
+                        {
+                            return tokens;
+                        }
+                        
+                        currentPosition = LexingUtils.UpdatePosition(text, currentPosition, currentAbsoluteOffset);
+                        break;
                 }
-                SkipWhiteSpace();
-                yield return nextToken;
-            }
-        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+                var result = StepParser.Parse(text, currentPosition);
+                if (result is FailedParsingResult)
+                {
+                    return tokens;
+                }
+
+                var token = ((SuccessfulParsingResult) result).Token;
+                tokens.Add(token);
+
+                currentPosition = LexingUtils.UpdatePosition(text, currentPosition, token.End.AbsoluteOffset + 1);
+            }
+
+            return tokens;
         }
     }
 }
