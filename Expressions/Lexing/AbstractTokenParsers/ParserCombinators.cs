@@ -134,6 +134,7 @@ namespace Expressions.Lexing.AbstractTokenParsers
                 }
                 
                 var token = ((SuccessfulParsingResult) result).Token;
+                tokens.Add(token);
                 var currentAbsoluteOffset = token.End.AbsoluteOffset + 1;
                 if (currentAbsoluteOffset >= text.Length)
                 {

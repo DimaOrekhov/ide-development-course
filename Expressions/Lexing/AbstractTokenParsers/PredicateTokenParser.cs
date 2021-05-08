@@ -10,7 +10,7 @@ namespace Expressions.Lexing.AbstractTokenParsers
             get;
         }
 
-        protected abstract ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end);
+        protected abstract Token MatchedSymbolsToToken(string match, Position start, Position end);
         
         public ParsingResult Parse(string text, Position initialPosition)
         {
