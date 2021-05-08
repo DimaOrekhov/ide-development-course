@@ -22,26 +22,22 @@ namespace ExpressionsTests.Lexing.TokenParsers
             Parser.ParseAndAssertNameAndPosition("snake_case * 3 - 4", InitialPosition, "snake_case");
             Parser.ParseAndAssertNameAndPosition("camelCase - 12", InitialPosition, "camelCase");
             Parser.ParseAndAssertNameAndPosition("CapitalCamelCase- 130", InitialPosition, "CapitalCamelCase");
-            Parser.ParseAndAssertNameAndPosition("2 * SCREAMING_SNAKE_CASE", Utils.OffsetFrom(InitialPosition, 4), 
-                "SCREAMING_SNAKE_CASE");
-        }
-
-        [Test]
-        public void TestParseInTheMiddle()
-        {
-            
         }
 
         [Test]
         public void TestParseAtTheEnd()
         {
-            
+            Parser.ParseAndAssertNameAndPosition("2 * SCREAMING_SNAKE_CASE", Utils.OffsetFrom(InitialPosition, 4), 
+                "SCREAMING_SNAKE_CASE");
+            Parser.ParseAndAssertNameAndPosition("235 + _some_name", Utils.OffsetFrom(InitialPosition, 6), 
+                "_some_name");
         }
 
         [Test]
         public void TestFailedParsing()
         {
-            
+            Parser.AssertParsingFails("+Hello");
+            Parser.AssertParsingFails("#varow");
         }
     }
 }
