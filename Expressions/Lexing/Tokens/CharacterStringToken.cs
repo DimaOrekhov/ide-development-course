@@ -33,7 +33,14 @@ namespace Expressions.Lexing.Tokens
         }
     }
 
-    public record ControlStringToken : CompoundToken
+    public record StringBodyToken : CompoundToken
+    {
+        public StringBodyToken(Position start, Position end) : base(start, end)
+        {
+        }
+    }
+
+    public record ControlStringToken : CharacterStringElementToken
     {
         public readonly UnsignedIntegerToken Value;
         

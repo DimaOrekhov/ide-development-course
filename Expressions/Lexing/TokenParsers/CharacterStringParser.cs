@@ -8,6 +8,8 @@ namespace Expressions.Lexing.TokenParsers
 {
     public static class CharacterStringParser
     {
+        private static readonly ITokenParser QuotedOrControlParser = new AlternativeParser(new QuotedStringParser(), new ControlStringParser());
+
         public static readonly ITokenParser Instance = new ManyParser(QuotedOrControlParser,
             tokens =>
             {
@@ -15,8 +17,6 @@ namespace Expressions.Lexing.TokenParsers
                 var token = new CharacterStringToken(elements);
                 return new SuccessfulParsingResult(token);
             });
-        
-        private static readonly ITokenParser QuotedOrControlParser = new AlternativeParser(new QuotedStringParser(), new ControlStringParser());
     }
     
     public class QuotedStringParser : SequentialParser
@@ -44,11 +44,9 @@ namespace Expressions.Lexing.TokenParsers
         protected override Predicate<char> Predicate => IsStringCharacter;
 
         private static bool IsStringCharacter(char character) => character != '\'' && character != '#';
-        
-        protected override ElementaryToken MatchedSymbolsToToken(string match, Position start, Position end)
-        {
-            return null; // We won't need separate representation for string body
-        }
+
+        protected override Token MatchedSymbolsToToken(string match, Position start, Position end) =>
+            new StringBodyToken(start, end);
     }
 
     public class ControlStringParser : SequentialParser
