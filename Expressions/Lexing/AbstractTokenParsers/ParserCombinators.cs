@@ -73,7 +73,7 @@ namespace Expressions.Lexing.AbstractTokenParsers
     {
         private readonly IEnumerable<ITokenParser> _parsers;
 
-        public AlternativeParser(IEnumerable<ITokenParser> parsers)
+        public AlternativeParser(params ITokenParser[] parsers)
         {
             _parsers = parsers;
         }
@@ -106,5 +106,44 @@ namespace Expressions.Lexing.AbstractTokenParsers
 
         public ParsingResult Parse(string text, Position initialPosition)
             => Decorate(_delegateParser.Parse(text, initialPosition), text);
+    }
+
+    public class ManyParser : ITokenParser
+    {
+        public delegate ParsingResult MergeFunction(List<Token> tokens);
+
+        private readonly MergeFunction _mergeFunction;
+        private readonly ITokenParser _parser;
+        
+        public ManyParser(ITokenParser parser, MergeFunction mergeFunction)
+        {
+            _parser = parser;
+            _mergeFunction = mergeFunction;
+        }
+        
+        public ParsingResult Parse(string text, Position initialPosition)
+        {
+            var currentPosition = initialPosition;
+            var tokens = new List<Token>();
+            while (true)
+            {
+                var result = _parser.Parse(text, currentPosition);
+                if (result is not SuccessfulParsingResult)
+                {
+                    break;
+                }
+                
+                var token = ((SuccessfulParsingResult) result).Token;
+                var currentAbsoluteOffset = token.End.AbsoluteOffset + 1;
+                if (currentAbsoluteOffset >= text.Length)
+                {
+                    break;
+                }
+                
+                currentPosition = LexingUtils.UpdatePosition(text, currentPosition, currentAbsoluteOffset);
+            }
+
+            return _mergeFunction(tokens);
+        }
     }
 }
