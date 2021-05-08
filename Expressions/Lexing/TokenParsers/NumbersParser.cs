@@ -1,36 +1,43 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Expressions.Lexing.AbstractTokenParsers;
 using Expressions.Lexing.Tokens;
 
 namespace Expressions.Lexing.TokenParsers
 {
-    public static class NumberParser
+    public class NumberParser : SequentialParser
     {
-        public class Instance : SequentialParser
+        protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
         {
-            protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
+            new OptionalParser(SignParser),
+            new AlternativeParser(
+                new UnsignedRealParser(), UnsignedIntegerParser
+            )
+        };
+
+        protected override Token ResultsToToken(List<Token> results)
+        {
+            var signToken = OptionalParser.ConvertOrNull<SignToken>(results[0]);
+            var number = (UnsignedNumberToken) results[1];
+
+            // Convert real to integer if no fraction and scale are present
+            number = number switch
             {
-                new OptionalParser(SignParser),
-                new AlternativeParser(
-                    new UnsignedRealParser(), UnsignedIntegerParser
-                )
+                UnsignedRealNumber r
+                    when r.FractionToken == null
+                         && r.ScaleFactorToken == null => new UnsignedDecimalInteger(r.IntegerToken),
+                _ => number
             };
             
-            protected override Token ResultsToToken(List<Token> results)
-            {
-                var signToken = OptionalParser.ConvertOrNull<SignToken>(results[0]);
-                var number = (UnsignedNumberToken) results[1];
-                return new NumberToken(signToken, number);
-            }
+            return new NumberToken(signToken, number);
         }
-        
+
+
         public static readonly AlternativeParser SignParser = new(
             new SingleCharacterParser('+', (_, pos) => new PlusSignToken(pos)),
             new SingleCharacterParser('-', (_, pos) => new MinusSignToken(pos))
         );
-        
+
         public class UnsignedRealParser : SequentialParser
         {
             protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
@@ -39,7 +46,7 @@ namespace Expressions.Lexing.TokenParsers
                 new OptionalParser(new FractionParser()),
                 new OptionalParser(new ScaleFactorParser())
             };
-            
+
             protected override Token ResultsToToken(List<Token> results)
             {
                 var integerPart = (DecimalDigitSequence) results[0];
@@ -72,6 +79,7 @@ namespace Expressions.Lexing.TokenParsers
                 new OptionalParser(SignParser),
                 new DecimalDigitSequenceParser()
             };
+
             protected override Token ResultsToToken(List<Token> results)
             {
                 var scaleChar = (ScaleToken) results[0];
@@ -82,7 +90,7 @@ namespace Expressions.Lexing.TokenParsers
         }
 
         public static readonly AlternativeParser UnsignedIntegerParser = new(
-            new BinaryIntegerParser(), new OctalIntegerParser(), 
+            new BinaryIntegerParser(), new OctalIntegerParser(),
             new DecimalIntegerParser(), new HexIntegerParser()
         );
 
@@ -90,7 +98,7 @@ namespace Expressions.Lexing.TokenParsers
         {
             protected override IEnumerable<ITokenParser> Parsers => new List<ITokenParser>
             {
-                new SingleCharacterParser('%', (_, pos) => new PercentToken(pos)), 
+                new SingleCharacterParser('%', (_, pos) => new PercentToken(pos)),
                 new BinaryDigitSequenceParser()
             };
 
